@@ -20,8 +20,9 @@ extern probka_t probka;
 extern float32_t probka_napiecie;
 extern parametry_sygnalu_t sygnalParam;
 
-int8_t validateParameters();
+void validateParameters();
 void getParameters();
 void debugParameters();
+void sendState();
 
 #endif

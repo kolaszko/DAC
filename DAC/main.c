@@ -20,8 +20,7 @@ uint8_t itr = 0;
 int8_t ready = 0;
 int8_t type = 'p';
 uint8_t counter = 0;
-//w - working, e - error, d - data processing
-int8_t state = 'w';
+int8_t state = 10;
 
 probka_t probka = {0};
 float32_t probka_napiecie = 0;
@@ -37,6 +36,10 @@ void uartInterrupt () interrupt 4
 		{			
 			itr = 0;
 			ready = 1;
+		}
+		else if(itr > 29)
+		{
+			itr = 0;
 		}
 		else
 		{
