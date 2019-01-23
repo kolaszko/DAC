@@ -16,9 +16,9 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="0.7*" />
-            <RowDefinition Height="0.7*" />
-            <RowDefinition Height="0.1*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
             
         </Grid.RowDefinitions>
         <Border Grid.Column="0" Margin="10" Grid.Row="0" Grid.ColumnSpan="2" BorderBrush="Black" BorderThickness="2">
@@ -42,14 +42,14 @@
 
                 Background="White">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="1.2*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="0.4*" />
@@ -66,7 +66,7 @@
                           ItemsSource="{Binding Source={StaticResource SignalTypeEnum}}" />
 
                 <TextBlock Grid.Row="1" Grid.Column="0"
-                           FontWeight="Light" Text="Period:" FontSize="18" Margin="5"
+                           FontWeight="Light" Text="Period (s):" FontSize="18" Margin="5"
                            VerticalAlignment="Center" />
                 <TextBox x:Name="PeriodTextBox" Grid.Row="1" Grid.Column="1"
                          VerticalAlignment="Center" Margin="5"
@@ -74,7 +74,7 @@
 
                 <TextBlock 
                            Grid.Row="2" Grid.Column="0"
-                           FontWeight="Light" Text="Amplitude:" FontSize="18" Margin="5"
+                           FontWeight="Light" Text="Amplitude (V):" FontSize="18" Margin="5"
                            VerticalAlignment="Center" />
                 <TextBox Grid.Row="2" Grid.Column="1"
                          VerticalAlignment="Center" Margin="5"
@@ -82,7 +82,7 @@
                          x:Name="AmplitudeTextBox"/>
 
                 <TextBlock Grid.Row="3" Grid.Column="0"
-                           FontWeight="Light" Text="Offset:" FontSize="18" Margin="5"
+                           FontWeight="Light" Text="Offset (V):" FontSize="18" Margin="5"
                            VerticalAlignment="Center" />
                 <TextBox Grid.Row="3" Grid.Column="1"
                          VerticalAlignment="Center" Margin="5"
@@ -90,7 +90,7 @@
                          x:Name="OffsetTextBox"/>
 
                 <TextBlock Grid.Row="4" Grid.Column="0"
-                           FontWeight="Light" Text="Rising point:" FontSize="18" Margin="5"
+                           FontWeight="Light" Text="Rising time (s):" FontSize="18" Margin="5"
                            VerticalAlignment="Center" />
                 <TextBox Grid.Row="4" Grid.Column="1"
                          VerticalAlignment="Center" Margin="5"
@@ -98,7 +98,7 @@
                          x:Name="RisingPointTextBox" Width="150" />
 
                 <TextBlock Grid.Row="5" Grid.Column="0"
-                           FontWeight="Light" Text="Falling point:" FontSize="18" Margin="5"
+                           FontWeight="Light" Text="Falling time (s):" FontSize="18" Margin="5"
                            VerticalAlignment="Center" />
                 <TextBox Grid.Row="5" Grid.Column="1"
                          VerticalAlignment="Center" Margin="5"
@@ -106,7 +106,7 @@
                          x:Name="FallingPointTextBox" Width="150" />
 
                 <TextBlock Grid.Row="6" Grid.Column="0"
-                           FontWeight="Light" Text="Stop point:" FontSize="18" Margin="5"
+                           FontWeight="Light" Text="Stop time (s):" FontSize="18" Margin="5"
                            VerticalAlignment="Center"
                            />
                 <TextBox Grid.Row="6" Grid.Column="1"
@@ -115,7 +115,8 @@
                          x:Name="StopPointTextBox"/>
 
                 <Button Margin="5"
-                    Content="Set Preview" FontWeight="Light" Grid.ColumnSpan ="2" Grid.Column="0"
+                        x:Name="PreviewSetButton"
+                    Content="Set Preview" Click="PreviewSetButton_OnClick" FontWeight="Light" Grid.ColumnSpan ="2" Grid.Column="0"
                     Grid.Row="7"></Button>
 
             </Grid>
@@ -123,9 +124,10 @@
         <Border BorderBrush="Black" BorderThickness="2" Margin="10" Grid.Row="1" Grid.ColumnSpan="3" Grid.Column="0">
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="0.5*"></RowDefinition>
-                    <RowDefinition Height="0.5*"></RowDefinition>
-                    <RowDefinition Height="0.5*"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
                     <RowDefinition Height="*"></RowDefinition>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
@@ -138,14 +140,19 @@
                    FontSize ="18"
                    Text="CONNECTION PROPERTIES" 
                    HorizontalAlignment="Center" Margin="5"  Grid.ColumnSpan="2"/>
+                <TextBlock 
+                    FontWeight="Light"
+                    FontSize ="16"
+                    Name="SignalParametersTextBlock" 
+                    HorizontalAlignment="Center" Margin="5" Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" />
 
-                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Margin="5"  Grid.Row="1" Grid.Column="0">
+                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Margin="7"  Grid.Row="2" Grid.Column="0">
                     <TextBlock FontSize ="18" FontWeight="Light" Text ="Baud Rate : "></TextBlock>
                     <TextBlock FontSize ="18" FontWeight="Light" Text="9600"></TextBlock>
                 </StackPanel>
-                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Margin="5"  Grid.Row="1" Grid.Column="1">
-                    <TextBlock Margin="0,2,0,0" FontSize ="18" FontWeight="Light" Text ="PORT : "></TextBlock>
-                    <ComboBox Margin="5" x:Name="COMComboBox"
+                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Margin="5"  Grid.Row="2" Grid.Column="1">
+                    <TextBlock Margin="0,0,0,0" FontSize ="18" FontWeight="Light" Text ="PORT : "></TextBlock>
+                    <ComboBox  x:Name="COMComboBox"
                               FontWeight="Light"
                               HorizontalAlignment="Left" 
                               VerticalAlignment="Center" MinWidth="100"
@@ -153,21 +160,20 @@
                 </StackPanel>
 
                 <TextBlock 
-                    Grid.Row="2"
+                    Grid.Row="3"
                     FontWeight="Light"
                     FontSize ="18"
-                    Text="CONNECTION DATA" 
+                    Text="CONNECTION LOG" 
                     HorizontalAlignment="Center" Margin="5"  Grid.ColumnSpan="2" Grid.Column="0" />
 
                 
-                <TextBox Grid.Row="3" Grid.ColumnSpan="2" x:Name="WHATHAPPENEDTEXTBLOCK" 
+                <TextBox Grid.Row="4" Grid.ColumnSpan="2" x:Name="WHATHAPPENEDTEXTBLOCK" 
                          Margin="5" IsReadOnly="True"></TextBox>
 
             </Grid>
         </Border>
         <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
                 FontWeight="Light" Content="Send this data here."
-                Margin="10,5,10,5"
                 Click="ButtonBase_OnClick" />
     </Grid>
 </Window>

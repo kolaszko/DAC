@@ -5,8 +5,8 @@ namespace SMProject
     public enum SignalType
     {
         [DataFrameRepresentation("t")] Triangle,
-        [DataFrameRepresentation("r")] Rectangular,
+        [DataFrameRepresentation("z")] Trapezoidal,
         [DataFrameRepresentation("p")] SawSignal,
-        [DataFrameRepresentation("s")] Sinusoid
+        
     }
 }

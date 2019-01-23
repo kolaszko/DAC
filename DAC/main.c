@@ -32,7 +32,7 @@ int8_t ready = 0;
 @var int8_t type 
 @brief Represents currently emitted signal. 
  * p - saw
- * t - traingle
+ * t - triangle
  * z - trapezoid
  * 
 */

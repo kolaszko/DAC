@@ -60,6 +60,7 @@
     <Compile Include="HardwareService.cs" />
     <Compile Include="Signal.cs" />
     <Compile Include="SignalType.cs" />
+    <Compile Include="Utils\DataDictionary.cs" />
     <Compile Include="Utils\DataFrameRepresentationAttribute.cs" />
     <Compile Include="Utils\EnumUtils.cs" />
     <Page Include="MainWindow.xaml">

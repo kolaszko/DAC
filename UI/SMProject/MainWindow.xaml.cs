@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO.Ports;
 using System.Linq;
 using System.Threading;
 using System.Windows;
@@ -9,6 +10,7 @@ using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using SMProject.Utils;
 
 namespace SMProject
 {
@@ -17,40 +19,83 @@ namespace SMProject
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly int bufferLength;
         private readonly CircularBuffer<Point> dataSampleBuffer;
-        private readonly HardwareService hardwareService = new HardwareService();
-        private readonly IEnumerable<double> preCalculatedSamples;
+        private readonly HardwareService hardwareService;
         private readonly Timer signalGeneratingTimer;
         private readonly int TickIntervalMs = 1;
         private int currentIterator;
         private Signal currentSignal;
+        private IEnumerable<double> preCalculatedSamples;
 
         public MainWindow()
         {
             InitializeComponent();
             Title = "ADUC831 Signal generator v1.00";
-            bufferLength = 700;
-
-            dataSampleBuffer = new CircularBuffer<Point>(bufferLength);
+            ;
+            hardwareService = new HardwareService(DataReceived);
+            dataSampleBuffer = new CircularBuffer<Point>(700);
             signalGeneratingTimer = new Timer(Callback, null, 0, TickIntervalMs);
 
             currentSignal = new Signal
             {
-                Amplitude = 100,
-                FallingPoint = 0,
+                Amplitude = 4,
+                FallingTime = 2.5,
                 Offset = 0,
-                Period = 10,
-                RisingPoint = 1,
-                StopPoint = 4,
+                Period = 3,
+                RisingTime = 0.5,
+                StopTime = 0,
                 TimePassed = 0,
-                SignalType = SignalType.SawSignal
+                SignalType = SignalType.Triangle
             };
-            preCalculatedSamples = PreCalculatesSamplesDictionary[currentSignal.SignalType].Invoke(currentSignal);
-            currentIterator = -1;
 
+            preCalculatedSamples = DataDictionary.PreCalculatesSamplesDictionary[currentSignal.SignalType]
+                .Invoke(currentSignal);
+
+            currentIterator = -1;
             InitViews();
-            
+        }
+
+
+        private async void DataReceived(object sender, SerialDataReceivedEventArgs args)
+        {
+            Dispatcher.Invoke(() =>
+            {
+
+                var sp = sender as SerialPort;
+                var line = sp?.ReadLine();
+                var displayResult = "";
+                if (line.Length < 7)
+                {
+                    var statusCode = long.Parse(line.First().ToString());
+                    switch (statusCode)
+                    {
+                        case 0:
+                            displayResult = $"Status code: {statusCode} - everything fine, signal set.";
+                            break;
+                        case 4:
+                            displayResult = $"Status code: {statusCode} - parameters count is not valid.";
+                            break;
+                        case 2:
+                            displayResult =
+                                $"Status code: {statusCode} - maximum amplitude exceeded, setting value to 3.0.";
+                            break;
+                        case 3:
+                            displayResult =
+                                $"Status code: {statusCode} - maximum amplitude with offset exceeded , setting value to 3.0.";
+                            break;
+                        case 1:
+                            displayResult =
+                                $"Status code: {statusCode} - parameters' time windows mismatch - all should sum up to the period time, check the integrity of preview.";
+                            break;
+                    }
+                }
+                else
+                {
+                    displayResult = $"Port returned message: {line.Replace("\r\n", "")}";
+                }
+
+                WHATHAPPENEDTEXTBLOCK.Text += displayResult + Environment.NewLine;
+            });
         }
 
         private void InitViews()
@@ -62,93 +107,26 @@ namespace SMProject
             AmplitudeTextBox.Text = currentSignal.Amplitude.ToString(ContentStringFormat);
             PeriodTextBox.Text = currentSignal.Period.ToString(ContentStringFormat);
             OffsetTextBox.Text = currentSignal.Offset.ToString(ContentStringFormat);
-            RisingPointTextBox.Text = currentSignal.RisingPoint.ToString(ContentStringFormat);
-            FallingPointTextBox.Text = currentSignal.FallingPoint.ToString(ContentStringFormat);
-            StopPointTextBox.Text = currentSignal.StopPoint.ToString(ContentStringFormat);
+            RisingPointTextBox.Text = currentSignal.RisingTime.ToString(ContentStringFormat);
+            FallingPointTextBox.Text = currentSignal.FallingTime.ToString(ContentStringFormat);
+            StopPointTextBox.Text = currentSignal.StopTime.ToString(ContentStringFormat);
 
+            SignalParametersTextBlock.Text = $"Data frame to send : {new DataFrame(currentSignal)}";
         }
-
-        public Dictionary<SignalType, Func<Signal, IEnumerable<double>>> PreCalculatesSamplesDictionary =>
-            new Dictionary<SignalType, Func<Signal, IEnumerable<double>>>
-            {
-                {SignalType.Triangle, signal => Enumerable.Repeat(signal.Amplitude, bufferLength)},
-                {
-                    SignalType.Sinusoid, signal =>
-                    {
-                        const int periodShown = 2;
-                        var samplesResolution = bufferLength;
-                        var samplesPerPeriod = samplesResolution / periodShown;
-
-                        var sinMax = Math.PI * 2;
-
-                        var firstPeriod = Enumerable.Range(0, samplesPerPeriod)
-                            .Select(sample => Math.Sin(sinMax * sample / samplesPerPeriod));
-                        var secondPeriod = Enumerable.Range(0, samplesPerPeriod)
-                            .Select(sample => Math.Sin(sinMax * sample / samplesPerPeriod));
-                        var result = firstPeriod.Concat(secondPeriod).Select(s => signal.Amplitude * s);
-
-                        return result;
-                    }
-                },
-                {
-                    SignalType.SawSignal, signal =>
-                    {
-                        const int periodShown = 2;
-                        var samplesResolution = bufferLength;
-                        var samplesPerPeriod = samplesResolution / periodShown;
-
-                        var risingStartSample = (int) (samplesPerPeriod * signal.RisingPoint / signal.Period);
-                        var fallingStartSample = (int) (samplesPerPeriod * signal.FallingPoint / signal.Period);
-                        var stopStartSample = (int) (samplesPerPeriod * signal.StopPoint / signal.Period);
-                        var result = new List<double>();
-                        var risingSamples = stopStartSample - risingStartSample;
-                        var increment = signal.Amplitude / risingSamples;
-                        var helperIterator = 1;
-                        foreach (var sample in Enumerable.Range(0, samplesPerPeriod))
-                            if (sample <= risingStartSample)
-                            {
-                                result.Add(0);
-                            }
-
-                            else if (sample >= stopStartSample)
-                            {
-                                result.Add(0);
-                            }
-                            else
-                            {
-                                result.Add(helperIterator * increment);
-                                helperIterator++;
-                            }
-
-                        return result.Concat(result);
-                    }
-                }
-            };
 
         private void Callback(object state)
         {
             Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(
                 () =>
                 {
+                    
                     DrawingSurface.Children.Clear();
                     currentIterator++;
                     currentIterator =
-                        currentIterator % bufferLength;
+                        currentIterator % dataSampleBuffer.Length;
                     var value = preCalculatedSamples.ElementAt(currentIterator);
                     dataSampleBuffer.Add(new Point(currentIterator, value));
 
-                    var xLine = new Polyline
-                    {
-                        Points = new PointCollection(Enumerable.Range(0, bufferLength).Select(s => new Point(s, 0))),
-                        StrokeThickness = 4,
-                        Stroke = new SolidColorBrush(Colors.AntiqueWhite)
-                    };
-                    var yLine = new Polyline
-                    {
-                        Points = new PointCollection {new Point(0, 0), new Point(0, 10 * currentSignal.Amplitude)},
-                        StrokeThickness = 4,
-                        Stroke = new SolidColorBrush(Colors.AntiqueWhite)
-                    };
                     var line = new Polyline
                     {
                         Points = new PointCollection(dataSampleBuffer.DataBuffer),
@@ -163,27 +141,61 @@ namespace SMProject
             ));
         }
 
-        private void ChangeSignal(Signal signal)
-        {
-            currentSignal = signal;
-        }
 
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {
             var dataFrame = new DataFrame(currentSignal);
-            hardwareService.Send(dataFrame.ToString());
+
+            WHATHAPPENEDTEXTBLOCK.Text += hardwareService.Send(dataFrame.ToString());
         }
+
+
         private void OnComComboBoxChanged(object sender, SelectionChangedEventArgs e)
         {
-            hardwareService.CurrentPortName = (sender as ComboBox).SelectedItem as string;
-            if(hardwareService.SetCurrentPortName(hardwareService.CurrentPortName))
-            {
-                WHATHAPPENEDTEXTBLOCK.Text += "Connected to port: " + hardwareService.CurrentPortName.ToString() + "\r\n";
-            }
+            hardwareService.CurrentPortName = (sender as ComboBox)?.SelectedItem as string;
+            if (hardwareService.SetCurrentPortName(hardwareService.CurrentPortName))
+                WHATHAPPENEDTEXTBLOCK.Text +=
+                    "Connected to port: " + hardwareService.CurrentPortName + Environment.NewLine;
             else
+                WHATHAPPENEDTEXTBLOCK.Text +=
+                    "Port did not switch. Cannot connect to port: " + hardwareService.CurrentPortName +
+                    Environment.NewLine;
+        }
+
+        private void PreviewSetButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            dataSampleBuffer.Clear();
+            currentIterator = -1;
+            var signal = new Signal
             {
-                WHATHAPPENEDTEXTBLOCK.Text += "Cannot connect to port: " + hardwareService.CurrentPortName.ToString() + "\r\n";
+                Amplitude = double.Parse(AmplitudeTextBox.Text),
+                FallingTime = double.Parse(FallingPointTextBox.Text),
+                Offset = double.Parse(OffsetTextBox.Text),
+                Period = double.Parse(PeriodTextBox.Text),
+                RisingTime = double.Parse(RisingPointTextBox.Text),
+                StopTime = double.Parse(StopPointTextBox.Text),
+                TimePassed = 0,
+                SignalType = (SignalType) SignalTypeComboBox.SelectedItem
+            };
+            if (Math.Abs(signal.FallingTime + signal.RisingTime + signal.StopTime -
+                         signal.Period) > 0.01)
+            {
+                WHATHAPPENEDTEXTBLOCK.Text +=
+                    $"Signal parameters time windows mismatch.{Environment.NewLine}Validate signal again.{Environment.NewLine}";
+                return;
             }
+
+            if (signal.Amplitude + signal.Offset > 5)
+            {
+                WHATHAPPENEDTEXTBLOCK.Text +=
+                    $"Amplitude set to high.{Environment.NewLine}";
+                return;
+            }
+
+            currentSignal = signal;
+            SignalParametersTextBlock.Text = $"Data frame to send : {new DataFrame(currentSignal)}";
+            preCalculatedSamples = DataDictionary.PreCalculatesSamplesDictionary[currentSignal.SignalType]
+                .Invoke(currentSignal);
         }
     }
 

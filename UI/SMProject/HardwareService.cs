@@ -8,46 +8,43 @@ namespace SMProject
 {
     public class HardwareService
     {
-        public HardwareService()
+        public HardwareService(SerialDataReceivedEventHandler dataReceived)
         {
-            CurrentPortName = AllowedPortNames.First();
-            InitSerialPortSender(CurrentPortName);
-            
+            this.dataReceived = dataReceived;
+            CurrentPortName = AllowedPortNames.First(x => x == "COM6");
+            InitSerialPortSender(CurrentPortName, this.dataReceived);
         }
+
+        private readonly SerialDataReceivedEventHandler dataReceived;
 
         public string CurrentPortName { get; set; }
-        public bool SetCurrentPortName(string portName)
-        {
-            var pName =  AllowedPortNames.First(x => x == portName);
-            CurrentPortName = pName;
-            return InitSerialPortSender(pName);
-        }
 
-        public IEnumerable<string> AllowedPortNames => SerialPort.GetPortNames().Where(x=> x.StartsWith("COM")); 
-
+        public IEnumerable<string> AllowedPortNames => SerialPort.GetPortNames().Where(x => x.StartsWith("COM"));
         private SerialPort SerialPort { get; set; }
 
-        //NOT WORKING, CANNOT INVOKE THAT 
-        private static void DataReceived(object sender, SerialDataReceivedEventArgs e)
+        public bool SetCurrentPortName(string portName)
         {
-            var tmpPort = (SerialPort)sender;
-            string data = tmpPort.ReadExisting();
+            var pName = AllowedPortNames.First(x => x == portName);
+            CurrentPortName = pName;
+            return InitSerialPortSender(pName, dataReceived);
         }
 
-        private bool InitSerialPortSender(string portName)
+
+
+        private bool InitSerialPortSender(string portName, SerialDataReceivedEventHandler dr)
         {
             SerialPort = new SerialPort(portName, 9600, Parity.None)
             {
                 Handshake = Handshake.None,
                 Parity = Parity.None
             };
-            SerialPort.DataReceived += new SerialDataReceivedEventHandler(DataReceived);
+            SerialPort.DataReceived += dr;
             try
             {
                 SerialPort.Open();
                 return true;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Debug.WriteLine(e);
                 return false;
@@ -57,21 +54,19 @@ namespace SMProject
 
         public string Send(string data)
         {
-            string returnData = "";
+            var returnData = "";
             try
             {
                 if (SerialPort.IsOpen)
-                {
                     try
                     {
                         SerialPort.Write(data);
+                        returnData = $"Sent '{data}' through {CurrentPortName}." + Environment.NewLine;
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         Debug.WriteLine(e);
                     }
-                }
-                
             }
             catch (Exception e)
             {

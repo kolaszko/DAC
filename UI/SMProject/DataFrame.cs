@@ -17,12 +17,12 @@ namespace SMProject
         public DataFrame(Signal currentSignal)
         {
             Amplitude = currentSignal.Amplitude;
-            FallingPoint = currentSignal.FallingPoint;
+            FallingPoint = currentSignal.FallingTime;
             Offset = currentSignal.Offset;
             Period = currentSignal.Period;
-            RisingPoint = currentSignal.RisingPoint;
+            RisingPoint = currentSignal.RisingTime;
             SignalType = currentSignal.SignalType;
-            StopPoint = currentSignal.StopPoint;
+            StopPoint = currentSignal.StopTime;
         }
 
         public DataFrame(double period, double amplitude, double offset, double stopPoint, double risingPoint,
