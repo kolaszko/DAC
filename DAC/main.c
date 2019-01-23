@@ -7,7 +7,6 @@
 #define F_OSC 11058000
 #define pars 12
 #define t_resol 16
-#define OKRES 50
 
 #define Tx_Tau(dzielnik) (float)((float)dzielnik/F_OSC)
 #define Tx_N(czas_ms, dzielnik) (unsigned int)((float)czas_ms/Tx_Tau(dzielnik)/1000.0)
@@ -18,7 +17,7 @@
 int8_t terminal[30];
 uint8_t itr = 0;
 int8_t ready = 0;
-int8_t type = 'p';
+int8_t type;
 uint8_t counter = 0;
 int8_t state = 10;
 
@@ -111,14 +110,8 @@ int main()
 	PT1=0;
 	
 		//DEFAULTS
-	sygnalParam.okres = 3.0;
-	sygnalParam.amplituda = 3.0;
-	sygnalParam.offset = 1;
-	sygnalParam.t = 0.0;
-	sygnalParam.rosnace = 0.001;
-	sygnalParam.opadajace = 0.001;
-	sygnalParam.stop = 1.5;
-	sygnalParam.delta_t = ((float32_t)OKRES/1000.0);
+	type = 'p';
+	setDefaultParameters();
 
 	T1_Set(OKRES)
 	TR1 = 1;

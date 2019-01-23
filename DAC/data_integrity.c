@@ -4,11 +4,13 @@ void validateParameters()
 {
 	if(sygnalParam.amplituda > 5.0)
 	{
+		sygnalParam.amplituda = 3.0;
 		state = 2;
 		return;
 	}
 	if(sygnalParam.amplituda + sygnalParam.offset > 5.0) 
 	{
+		sygnalParam.offset = 0;
 		state = 3;
 		return;
 	}
@@ -82,4 +84,16 @@ void sendState()
 	int8_t stateInfo[6];
 	sprintf(stateInfo, "%i \r\n", (int)state);
 	UART_puts(stateInfo);
+}
+
+void setDefaultParameters()
+{
+	sygnalParam.okres = 3.0;
+	sygnalParam.amplituda = 3.0;
+	sygnalParam.offset = 1;
+	sygnalParam.t = 0.0;
+	sygnalParam.rosnace = 0.001;
+	sygnalParam.opadajace = 0.001;
+	sygnalParam.stop = 1.5;
+	sygnalParam.delta_t = ((float32_t)OKRES/1000.0);
 }

@@ -9,6 +9,8 @@
 
 #include <stdio.h>
 
+#define OKRES 50
+
 extern int8_t terminal[30];
 extern uint8_t itr;
 extern int8_t ready;
@@ -24,5 +26,6 @@ void validateParameters();
 void getParameters();
 void debugParameters();
 void sendState();
+void setDefaultParameters();
 
 #endif
