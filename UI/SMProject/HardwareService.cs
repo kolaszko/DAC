@@ -12,7 +12,7 @@ namespace SMProject
         {
             CurrentPortName = AllowedPortNames.First();
             InitSerialPortSender(CurrentPortName);
-            SerialPort.DataReceived += new SerialDataReceivedEventHandler(DataReceived);
+            
         }
 
         public string CurrentPortName { get; set; }
@@ -41,7 +41,7 @@ namespace SMProject
                 Handshake = Handshake.None,
                 Parity = Parity.None
             };
-
+            SerialPort.DataReceived += new SerialDataReceivedEventHandler(DataReceived);
             try
             {
                 SerialPort.Open();
