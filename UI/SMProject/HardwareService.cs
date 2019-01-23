@@ -12,6 +12,7 @@ namespace SMProject
         {
             CurrentPortName = AllowedPortNames.First();
             InitSerialPortSender(CurrentPortName);
+            SerialPort.DataReceived += new SerialDataReceivedEventHandler(DataReceived);
         }
 
         public string CurrentPortName { get; set; }
@@ -25,6 +26,13 @@ namespace SMProject
         public IEnumerable<string> AllowedPortNames => SerialPort.GetPortNames().Where(x=> x.StartsWith("COM")); 
 
         private SerialPort SerialPort { get; set; }
+
+        //NOT WORKING, CANNOT INVOKE THAT 
+        private static void DataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            var tmpPort = (SerialPort)sender;
+            string data = tmpPort.ReadExisting();
+        }
 
         private bool InitSerialPortSender(string portName)
         {
@@ -57,7 +65,6 @@ namespace SMProject
                     try
                     {
                         SerialPort.Write(data);
-                        //returnData = SerialPort.ReadLine();
                     }
                     catch(Exception e)
                     {
