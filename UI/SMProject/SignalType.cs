@@ -6,7 +6,6 @@ namespace SMProject
     {
         [DataFrameRepresentation("t")] Triangle,
         [DataFrameRepresentation("z")] Trapezoidal,
-        [DataFrameRepresentation("p")] SawSignal,
-        
+        [DataFrameRepresentation("p")] SawSignal
     }
 }

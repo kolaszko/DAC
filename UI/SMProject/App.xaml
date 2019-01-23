@@ -6,9 +6,9 @@
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         <ObjectDataProvider x:Key="SignalTypeEnum" MethodName="GetValues"
-                                ObjectType="{x:Type sys:Enum}">
+                            ObjectType="{x:Type sys:Enum}">
             <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="local:SignalType"/>
+                <x:Type TypeName="local:SignalType" />
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
     </Application.Resources>

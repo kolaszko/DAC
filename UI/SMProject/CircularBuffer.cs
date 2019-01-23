@@ -5,9 +5,9 @@ namespace SMProject
     public class CircularBuffer<T>
     {
         public readonly Queue<T> DataBuffer;
-        public int Length;
 
         private bool directionSwitcher;
+        public int Length;
 
         public CircularBuffer(int length)
         {
@@ -30,7 +30,7 @@ namespace SMProject
 
         public void Clear()
         {
-            this.DataBuffer.Clear();
+            DataBuffer.Clear();
         }
     }
 }

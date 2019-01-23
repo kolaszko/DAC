@@ -8,14 +8,14 @@ namespace SMProject
 {
     public class HardwareService
     {
+        private readonly SerialDataReceivedEventHandler dataReceived;
+
         public HardwareService(SerialDataReceivedEventHandler dataReceived)
         {
             this.dataReceived = dataReceived;
             CurrentPortName = AllowedPortNames.First(x => x == "COM6");
             InitSerialPortSender(CurrentPortName, this.dataReceived);
         }
-
-        private readonly SerialDataReceivedEventHandler dataReceived;
 
         public string CurrentPortName { get; set; }
 
@@ -28,7 +28,6 @@ namespace SMProject
             CurrentPortName = pName;
             return InitSerialPortSender(pName, dataReceived);
         }
-
 
 
         private bool InitSerialPortSender(string portName, SerialDataReceivedEventHandler dr)

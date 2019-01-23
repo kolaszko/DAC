@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO.Ports;
 using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
@@ -60,7 +58,6 @@ namespace SMProject
         {
             Dispatcher.Invoke(() =>
             {
-
                 var sp = sender as SerialPort;
                 var line = sp?.ReadLine();
                 var displayResult = "";
@@ -119,7 +116,6 @@ namespace SMProject
             Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(
                 () =>
                 {
-                    
                     DrawingSurface.Children.Clear();
                     currentIterator++;
                     currentIterator =
@@ -196,19 +192,6 @@ namespace SMProject
             SignalParametersTextBlock.Text = $"Data frame to send : {new DataFrame(currentSignal)}";
             preCalculatedSamples = DataDictionary.PreCalculatesSamplesDictionary[currentSignal.SignalType]
                 .Invoke(currentSignal);
-        }
-    }
-
-    public class HalvingConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return (double) value * -0.495;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return null;
         }
     }
 }

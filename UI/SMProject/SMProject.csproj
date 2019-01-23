@@ -57,6 +57,7 @@
     </ApplicationDefinition>
     <Compile Include="CircularBuffer.cs" />
     <Compile Include="DataFrame.cs" />
+    <Compile Include="HalvingConverter.cs" />
     <Compile Include="HardwareService.cs" />
     <Compile Include="Signal.cs" />
     <Compile Include="SignalType.cs" />

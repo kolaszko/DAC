@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 
 namespace SMProject.Utils
 {
     public static class DataDictionary
     {
         public static readonly int GeneratedSamplesBufferLength = 700;
+
         public static Dictionary<SignalType, Func<Signal, IEnumerable<double>>> PreCalculatesSamplesDictionary =>
             new Dictionary<SignalType, Func<Signal, IEnumerable<double>>>
             {
