@@ -14,26 +14,36 @@ namespace SMProject
             InitSerialPortSender(CurrentPortName);
         }
 
-        public string CurrentPortName { get; private set; }
-        public void SetCurrentPortName(string portName)
+        public string CurrentPortName { get; set; }
+        public bool SetCurrentPortName(string portName)
         {
             var pName =  AllowedPortNames.First(x => x == portName);
             CurrentPortName = pName;
-            InitSerialPortSender(pName);
+            return InitSerialPortSender(pName);
         }
 
         public IEnumerable<string> AllowedPortNames => SerialPort.GetPortNames().Where(x=> x.StartsWith("COM")); 
 
         private SerialPort SerialPort { get; set; }
 
-        private void InitSerialPortSender(string portName)
+        private bool InitSerialPortSender(string portName)
         {
             SerialPort = new SerialPort(portName, 9600, Parity.None)
             {
                 Handshake = Handshake.None,
                 Parity = Parity.None
             };
-            SerialPort.Open();
+
+            try
+            {
+                SerialPort.Open();
+                return true;
+            }
+            catch(Exception e)
+            {
+                Debug.WriteLine(e);
+                return false;
+            }
         }
 
 
@@ -44,8 +54,15 @@ namespace SMProject
             {
                 if (SerialPort.IsOpen)
                 {
-                    SerialPort.Write(data);
-                    returnData  = SerialPort.ReadLine();
+                    try
+                    {
+                        SerialPort.Write(data);
+                        //returnData = SerialPort.ReadLine();
+                    }
+                    catch(Exception e)
+                    {
+                        Debug.WriteLine(e);
+                    }
                 }
                 
             }

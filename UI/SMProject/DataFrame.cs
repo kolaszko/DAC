@@ -42,9 +42,9 @@ namespace SMProject
         public override string ToString()
         {
             var b =
-                $"{SignalType.GetDescription()},{Period.ToString(CultureInfo.InvariantCulture)},{Amplitude.ToString(CultureInfo.InvariantCulture)}" +
-                $",{Offset.ToString(CultureInfo.InvariantCulture)},{RisingPoint.ToString(CultureInfo.InvariantCulture)},{FallingPoint.ToString(CultureInfo.InvariantCulture)}" +
-                $",{StopPoint.ToString(CultureInfo.InvariantCulture)}\r";
+                $"{SignalType.GetDescription()} {Period.ToString(CultureInfo.InvariantCulture)} {Amplitude.ToString(CultureInfo.InvariantCulture)}" +
+                $" {Offset.ToString(CultureInfo.InvariantCulture)} {RisingPoint.ToString(CultureInfo.InvariantCulture)} {FallingPoint.ToString(CultureInfo.InvariantCulture)}" +
+                $" {StopPoint.ToString(CultureInfo.InvariantCulture)}!";
 
             return b;
         }

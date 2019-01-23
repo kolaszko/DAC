@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -57,6 +58,7 @@ namespace SMProject
             COMComboBox.ItemsSource = hardwareService.AllowedPortNames;
             SignalTypeComboBox.SelectedItem = currentSignal.SignalType;
             COMComboBox.SelectedItem = hardwareService.CurrentPortName;
+            COMComboBox.SelectionChanged += OnComComboBoxChanged;
             AmplitudeTextBox.Text = currentSignal.Amplitude.ToString(ContentStringFormat);
             PeriodTextBox.Text = currentSignal.Period.ToString(ContentStringFormat);
             OffsetTextBox.Text = currentSignal.Offset.ToString(ContentStringFormat);
@@ -170,6 +172,18 @@ namespace SMProject
         {
             var dataFrame = new DataFrame(currentSignal);
             hardwareService.Send(dataFrame.ToString());
+        }
+        private void OnComComboBoxChanged(object sender, SelectionChangedEventArgs e)
+        {
+            hardwareService.CurrentPortName = (sender as ComboBox).SelectedItem as string;
+            if(hardwareService.SetCurrentPortName(hardwareService.CurrentPortName))
+            {
+                WHATHAPPENEDTEXTBLOCK.Text += "Connected to port: " + hardwareService.CurrentPortName.ToString() + "\r\n";
+            }
+            else
+            {
+                WHATHAPPENEDTEXTBLOCK.Text += "Cannot connect to port: " + hardwareService.CurrentPortName.ToString() + "\r\n";
+            }
         }
     }
 
