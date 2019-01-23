@@ -22,10 +22,35 @@ extern probka_t probka;
 extern float32_t probka_napiecie;
 extern parametry_sygnalu_t sygnalParam;
 
+/**
+ * @brief Validates correctness of given parameters.
+ * 
+ * @return void
+ */
 void validateParameters();
+/**
+ * @brief Getting parameters of signal from UART filled terminal. 
+ * 
+ * @return void
+ */
 void getParameters();
+/**
+ * @brief Sending current parameters of signal through UART.
+ * 
+ * @return void
+ */
 void debugParameters();
+/**
+ * @brief Sending current state of program/data correctness through UART.
+ * 
+ * @return void
+ */
 void sendState();
+/**
+ * @brief Setting default parameters of signal.
+ * 
+ * @return void
+ */
 void setDefaultParameters();
 
 #endif

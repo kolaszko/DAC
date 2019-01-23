@@ -62,8 +62,14 @@ void getParameters()
 {
 	if(ready == 1)
 	{
+		int8_t isReset = 0;
 		TR1 = 0;
 		counter = sscanf(terminal, "%c %f %f %f %f %f %f" , &type, &sygnalParam.okres, &sygnalParam.amplituda, &sygnalParam.offset, &sygnalParam.rosnace, &sygnalParam.opadajace, &sygnalParam.stop);
+		sscanf(terminal, "%c", &isReset);
+		if(isReset == 'R')
+		{
+			setDefaultParameters();
+		}
 		debugParameters();
 		validateParameters();
 		sendState();
@@ -88,6 +94,7 @@ void sendState()
 
 void setDefaultParameters()
 {
+	type = 'p';
 	sygnalParam.okres = 3.0;
 	sygnalParam.amplituda = 3.0;
 	sygnalParam.offset = 1;
