@@ -62,13 +62,17 @@ void getParameters()
 {
 	if(ready == 1)
 	{
-		int8_t isReset = 0;
+		int8_t flag = 0;
 		TR1 = 0;
 		counter = sscanf(terminal, "%c %f %f %f %f %f %f" , &type, &sygnalParam.okres, &sygnalParam.amplituda, &sygnalParam.offset, &sygnalParam.rosnace, &sygnalParam.opadajace, &sygnalParam.stop);
-		sscanf(terminal, "%c", &isReset);
-		if(isReset == 'R')
+		sscanf(terminal, "%c", &flag);
+		if(flag == 'R')
 		{
 			setDefaultParameters();
+		}
+		if(flag == 'U')
+		{
+			sendStartParameters();
 		}
 		debugParameters();
 		validateParameters();
@@ -82,6 +86,13 @@ void debugParameters()
 {
 	int8_t info[35];
 	sprintf(info, "%c %.2f %.2f %.2f %.2f %.2f %.2f \r\n" , type, sygnalParam.okres, sygnalParam.amplituda, sygnalParam.offset, sygnalParam.rosnace, sygnalParam.opadajace, sygnalParam.stop);
+	UART_puts(info);
+}
+
+void sendStartParameters()
+{
+	int8_t info[35];
+	sprintf(info, "U %c %.2f %.2f %.2f %.2f %.2f %.2f \r\n" , type, sygnalParam.okres, sygnalParam.amplituda, sygnalParam.offset, sygnalParam.rosnace, sygnalParam.opadajace, sygnalParam.stop);
 	UART_puts(info);
 }
 

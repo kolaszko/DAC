@@ -52,5 +52,11 @@ void sendState();
  * @return void
  */
 void setDefaultParameters();
+/**
+ * @brief Sending start parameters.
+ * 
+ * @return void
+ */
+void sendStartParameters();
 
 #endif
