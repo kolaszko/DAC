@@ -26,6 +26,7 @@ namespace SMProject
         {
             var pName = AllowedPortNames.First(x => x == portName);
             CurrentPortName = pName;
+            SerialPort?.Dispose();
             return InitSerialPortSender(pName, dataReceived);
         }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO.Ports;
 using System.Linq;
 using System.Threading;
@@ -101,12 +102,12 @@ namespace SMProject
             SignalTypeComboBox.SelectedItem = currentSignal.SignalType;
             COMComboBox.SelectedItem = hardwareService.CurrentPortName;
             COMComboBox.SelectionChanged += OnComComboBoxChanged;
-            AmplitudeTextBox.Text = currentSignal.Amplitude.ToString(ContentStringFormat);
-            PeriodTextBox.Text = currentSignal.Period.ToString(ContentStringFormat);
-            OffsetTextBox.Text = currentSignal.Offset.ToString(ContentStringFormat);
-            RisingPointTextBox.Text = currentSignal.RisingTime.ToString(ContentStringFormat);
-            FallingPointTextBox.Text = currentSignal.FallingTime.ToString(ContentStringFormat);
-            StopPointTextBox.Text = currentSignal.StopTime.ToString(ContentStringFormat);
+            AmplitudeTextBox.Text = currentSignal.Amplitude.ToString(CultureInfo.InvariantCulture);
+            PeriodTextBox.Text = currentSignal.Period.ToString(CultureInfo.InvariantCulture);
+            OffsetTextBox.Text = currentSignal.Offset.ToString(CultureInfo.InvariantCulture);
+            RisingPointTextBox.Text = currentSignal.RisingTime.ToString(CultureInfo.InvariantCulture);
+            FallingPointTextBox.Text = currentSignal.FallingTime.ToString(CultureInfo.InvariantCulture);
+            StopPointTextBox.Text = currentSignal.StopTime.ToString(CultureInfo.InvariantCulture);
 
             SignalParametersTextBlock.Text = $"Data frame to send : {new DataFrame(currentSignal)}";
         }
@@ -162,17 +163,29 @@ namespace SMProject
         {
             dataSampleBuffer.Clear();
             currentIterator = -1;
-            var signal = new Signal
+            Signal signal;
+            try
             {
-                Amplitude = double.Parse(AmplitudeTextBox.Text),
-                FallingTime = double.Parse(FallingPointTextBox.Text),
-                Offset = double.Parse(OffsetTextBox.Text),
-                Period = double.Parse(PeriodTextBox.Text),
-                RisingTime = double.Parse(RisingPointTextBox.Text),
-                StopTime = double.Parse(StopPointTextBox.Text),
-                TimePassed = 0,
-                SignalType = (SignalType) SignalTypeComboBox.SelectedItem
-            };
+                signal = new Signal
+                {
+                    Amplitude = double.Parse(AmplitudeTextBox.Text, CultureInfo.InvariantCulture),
+                    FallingTime = double.Parse(FallingPointTextBox.Text, CultureInfo.InvariantCulture),
+                    Offset = double.Parse(OffsetTextBox.Text, CultureInfo.InvariantCulture),
+                    Period = double.Parse(PeriodTextBox.Text, CultureInfo.InvariantCulture),
+                    RisingTime = double.Parse(RisingPointTextBox.Text, CultureInfo.InvariantCulture),
+                    StopTime = double.Parse(StopPointTextBox.Text, CultureInfo.InvariantCulture),
+                    TimePassed = 0,
+                    SignalType = (SignalType)SignalTypeComboBox.SelectedItem
+                };
+            }
+            catch (Exception exception)
+            {
+
+                WHATHAPPENEDTEXTBLOCK.Text +=
+                    $"Signal parameters parsing error.{Environment.NewLine}";
+                return;
+            }
+          
             if (Math.Abs(signal.FallingTime + signal.RisingTime + signal.StopTime -
                          signal.Period) > 0.01)
             {
