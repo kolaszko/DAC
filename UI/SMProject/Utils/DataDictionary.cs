@@ -83,22 +83,16 @@ namespace SMProject.Utils
                         var samplesResolution = GeneratedSamplesBufferLength;
                         var samplesPerPeriod = samplesResolution / periodShown;
 
-
-                        var stoppingSample = (int) (samplesPerPeriod * signal.StopTime / signal.Period);
                         var result = new List<double>();
-                        var risingSamplesCount = stoppingSample;
+                        var risingSamplesCount = samplesPerPeriod;
                         var increment = 20 * signal.Amplitude / risingSamplesCount;
                         var helperIterator = 1;
                         foreach (var sample in Enumerable.Range(0, samplesPerPeriod))
-                            if (sample >= stoppingSample)
-                            {
-                                result.Add(0);
-                            }
-                            else
-                            {
-                                result.Add(helperIterator * increment + signal.Offset);
-                                helperIterator++;
-                            }
+                        {
+                            result.Add(helperIterator * increment + signal.Offset);
+                            helperIterator++;
+                        }
+
 
                         return result.Concat(result);
                     }
