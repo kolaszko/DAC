@@ -173,7 +173,7 @@
 
             </Grid>
         </Border>
-        <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
+        <Button Grid.Row="2" Grid.Column="0" Margin="10,0,10,0" Grid.ColumnSpan="3"
                 FontWeight="Light" Content="Send this data here."
                 Click="ButtonBase_OnClick" />
     </Grid>

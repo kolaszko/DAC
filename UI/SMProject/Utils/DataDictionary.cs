@@ -30,16 +30,16 @@ namespace SMProject.Utils
                         foreach (var sample in Enumerable.Range(0, samplesPerPeriod))
                             if (sample < risingSamplesCount)
                             {
-                                result.Add(helperIterator * increment + signal.Offset);
+                                result.Add(helperIterator * increment +  20 * signal.Offset);
                                 helperIterator++;
                             }
                             else if (sample > risingSamplesCount && sample < risingSamplesCount + stopSamplesCount)
                             {
-                                result.Add(20 * signal.Amplitude + signal.Offset);
+                                result.Add(20 * signal.Amplitude +  20 * signal.Offset);
                             }
                             else
                             {
-                                result.Add(20 * signal.Amplitude - secondHelperIterator * decrement + signal.Offset);
+                                result.Add(20 * signal.Amplitude - secondHelperIterator * decrement +  20 * signal.Offset);
                                 secondHelperIterator++;
                             }
 
@@ -64,12 +64,12 @@ namespace SMProject.Utils
                         foreach (var sample in Enumerable.Range(0, samplesPerPeriod))
                             if (sample < risingSamplesCount)
                             {
-                                result.Add(helperIterator * increment + signal.Offset);
+                                result.Add(helperIterator * increment +  20 * signal.Offset);
                                 helperIterator++;
                             }
                             else
                             {
-                                result.Add(20 * signal.Amplitude - secondHelperIterator * decrement + signal.Offset);
+                                result.Add(20 * signal.Amplitude - secondHelperIterator * decrement + 20 * signal.Offset);
                                 secondHelperIterator++;
                             }
 
@@ -89,7 +89,7 @@ namespace SMProject.Utils
                         var helperIterator = 1;
                         foreach (var sample in Enumerable.Range(0, samplesPerPeriod))
                         {
-                            result.Add(helperIterator * increment + signal.Offset);
+                            result.Add(helperIterator * increment + 20 * signal.Offset);
                             helperIterator++;
                         }
 

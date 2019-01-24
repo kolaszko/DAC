@@ -124,15 +124,23 @@ namespace SMProject
                     var value = preCalculatedSamples.ElementAt(currentIterator);
                     dataSampleBuffer.Add(new Point(currentIterator, value));
 
+
+                    var xline = new Polyline
+                    {
+                        Points = new PointCollection(Enumerable.Range(0,dataSampleBuffer.Length).Select(x => new Point(x,0))),
+
+                        StrokeThickness = 1,
+                        Stroke = new SolidColorBrush(Colors.HotPink)
+                    };
                     var line = new Polyline
                     {
                         Points = new PointCollection(dataSampleBuffer.DataBuffer),
 
-                        StrokeThickness = 1,
+                        StrokeThickness = 2,
                         Stroke = new SolidColorBrush(Colors.Black)
                     };
 
-
+                    DrawingSurface.Children.Add(xline);
                     DrawingSurface.Children.Add(line);
                 }
             ));
@@ -203,6 +211,9 @@ namespace SMProject
 
             currentSignal = signal;
             SignalParametersTextBlock.Text = $"Data frame to send : {new DataFrame(currentSignal)}";
+
+            WHATHAPPENEDTEXTBLOCK.Text +=
+                $"New signal set.{Environment.NewLine}";
             preCalculatedSamples = DataDictionary.PreCalculatesSamplesDictionary[currentSignal.SignalType]
                 .Invoke(currentSignal);
         }
